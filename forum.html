@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fórum StarsTech</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #F2EFE7; /* Cor de fundo */
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #16404D; /* Cor do cabeçalho */
+            color: #F2EFE7; /* Cor do texto do cabeçalho */
+            padding: 10px 0;
+            text-align: center;
+        }
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .welcome-message {
+            background-color: #4DA1A9; /* Cor da mensagem de boas-vindas */
+            color: #F2EFE7; /* Cor do texto da mensagem */
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .topic {
+            border-bottom: 1px solid #ccc;
+            padding: 10px 0;
+        }
+        .topic:last-child {
+            border-bottom: none;
+        }
+        .topic h2 {
+            margin: 0;
+            font-size: 1.2em;
+            color: #16404D; /* Cor do título das discussões */
+        }
+        .topic p {
+            margin: 5px 0 0;
+            color: #555;
+        }
+        .new-topic {
+            margin: 20px 0;
+        }
+        .new-topic input, .new-topic textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .new-topic button {
+            padding: 10px 20px;
+            background-color: #0097B2; /* Cor do botão */
+            color: #F2EFE7; /* Cor do texto do botão */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .new-topic button:hover {
+            background-color: #2973B2; /* Cor do botão ao passar o mouse */
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .user-info img {
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Fórum StarsTech</h1>
+    </header>
+    <div class="container">
+        <div class="welcome-message">
+            <h2>Bem-vindo ao Fórum StarsTech!</h2>
+            <p>Este fórum é um espaço para discutir e compartilhar conhecimento. Por favor, respeite as regras e não maltrate ninguém.</p>
+        </div>
+        <div class="new-topic">
+            <h2>Nova Discussão</h2>
+            <form id="new-topic-form">
+                <div class="user-info">
+                    <img id="user-photo-preview" src="user-photo.jpg" alt="Foto do usuário">
+                    <input type="file" id="user-photo" accept="image/*" onchange="previewPhoto(event)">
+                    <input type="text" id="user-name" placeholder="Seu nome">
+                </div>
+                <input type="text" id="topic-title" placeholder="Título">
+                <textarea rows="5" id="topic-message" placeholder="Escreva sua mensagem aqui..."></textarea>
+                <button type="submit">Postar</button>
+            </form>
+        </div>
+        <div id="topics-container">
+            <!-- Discussões serão carregadas aqui -->
+        </div>
+    </div>
+    <script>
+        function previewPhoto(event) {
+            const reader = new FileReader();
+            reader.onload = function(){
+                const output = document.getElementById('user-photo-preview');
+                output.src = reader.result;
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+        document.getElementById('new-topic-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const name = document.getElementById('user-name').value;
+            const title = document.getElementById('topic-title').value;
+            const message = document.getElementById('topic-message').value;
+            const photo = document.getElementById('user-photo-preview').src;
+
+            const discussion = { name, title, message, photo };
+            saveDiscussion(discussion);
+            loadDiscussions();
+        });
+
+        function saveDiscussion(discussion) {
+            let discussions = JSON.parse(localStorage.getItem('discussions')) || [];
+            discussions.push(discussion);
+            localStorage.setItem('discussions', JSON.stringify(discussions));
+        }
+
+        function loadDiscussions() {
+            const discussions = JSON.parse(localStorage.getItem('discussions')) || [];
+            const container = document.getElementById('topics-container');
+            container.innerHTML = '';
+            discussions.forEach(discussion => {
+                const topicDiv = document.createElement('div');
+                topicDiv.className = 'topic';
+                topicDiv.innerHTML = `
+                    <h2>${discussion.title}</h2>
+                    <p>${discussion.message}</p>
+                    <div class="user-info">
+                        <img src="${discussion.photo}" alt="Foto do usuário">
+                        <span>${discussion.name}</span>
+                    </div>
+                `;
+                container.appendChild(topicDiv);
+            });
+        }
+
+        // Carregar discussões ao carregar a página
+        window.onload = loadDiscussions;
+    </script>
+</body>
+</html>
